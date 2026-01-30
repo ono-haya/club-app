@@ -9,7 +9,7 @@ import {
   Box,
   Typography,
   List,
-  ListItem,
+  ListItemButton,
   ListItemText,
   Divider,
 } from '@mui/material';
@@ -20,7 +20,7 @@ import { ja } from 'date-fns/locale';
 import AddEventModal from '../components/AddEventModal';
 import EventDetailsModal from '../components/EventDetailsModal';
 import AbsenceCounter from '../components/AbsenceCounter';
-import useEvents, { Event } from '../hooks/useEvents';
+import useEvents, { type Event } from '../hooks/useEvents';
 
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
@@ -44,7 +44,6 @@ const Home: React.FC = () => {
     }
   };
 
-  // AddEventModal関連
   const handleCalendarDayClick = (date: Date) => {
     setDateForAddEventModal(date);
     setIsAddEventModalOpen(true);
@@ -55,7 +54,6 @@ const Home: React.FC = () => {
     setDateForAddEventModal(undefined);
   };
 
-  // EventDetailsModal関連
   const handleEventClick = (event: Event) => {
     setSelectedEvent(event);
     setIsEventDetailsModalOpen(true);
@@ -66,7 +64,6 @@ const Home: React.FC = () => {
     setSelectedEvent(null);
   };
 
-  // カレンダーのタイルコンテンツ
   const tileContent = ({ date, view }: { date: Date; view: string }) => {
     if (view === 'month') {
       const dayEvents = events.filter(event =>
@@ -99,11 +96,12 @@ const Home: React.FC = () => {
     }
     return null;
   };
-
-  // 選択された日付のイベントリスト
-  const eventsForSelectedDate = Array.isArray(selectedCalendarDate) ? [] : events.filter(event =>
-    event.start.toDate().toDateString() === selectedCalendarDate?.toDateString()
-  );
+  
+  const activeDate = Array.isArray(selectedCalendarDate) ? selectedCalendarDate[0] : selectedCalendarDate;
+  
+  const eventsForSelectedDate = activeDate ? events.filter(event =>
+    event.start.toDate().toDateString() === activeDate.toDateString()
+  ) : [];
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -137,30 +135,28 @@ const Home: React.FC = () => {
             tileContent={tileContent}
             locale="ja-JP"
           />
-          {Array.isArray(selectedCalendarDate) ? null : (
-            <Box sx={{ mt: 3, width: '100%', maxWidth: 800 }}>
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                {format(selectedCalendarDate, 'yyyy年M月d日 (EE)', { locale: ja })} の予定
-              </Typography>
-              {eventsForSelectedDate.length > 0 ? (
-                <List>
-                  {eventsForSelectedDate.map(event => (
-                    <React.Fragment key={event.id}>
-                      <ListItem button onClick={() => handleEventClick(event)}>
-                        <ListItemText
-                          primary={event.title}
-                          secondary={`${format(event.start.toDate(), 'HH:mm', { locale: ja })} - ${format(event.end.toDate(), 'HH:mm', { locale: ja })} @ ${event.location} - ${event.description}`}
-                        />
-                      </ListItem>
-                      <Divider />
-                    </React.Fragment>
-                  ))}
-                </List>
-              ) : (
-                <Typography>この日には予定がありません。</Typography>
-              )}
-            </Box>
-          )}
+          <Box sx={{ mt: 3, width: '100%', maxWidth: 800 }}>
+            <Typography variant="h6" sx={{ mb: 2 }}>
+              {activeDate ? format(activeDate, 'yyyy年M月d日 (EE)', { locale: ja }) : ''} の予定
+            </Typography>
+            {eventsForSelectedDate.length > 0 ? (
+              <List>
+                {eventsForSelectedDate.map(event => (
+                  <React.Fragment key={event.id}>
+                    <ListItemButton onClick={() => handleEventClick(event)}>
+                      <ListItemText
+                        primary={event.title}
+                        secondary={`${format(event.start.toDate(), 'HH:mm', { locale: ja })} - ${format(event.end.toDate(), 'HH:mm', { locale: ja })} @ ${event.location} - ${event.description}`}
+                      />
+                    </ListItemButton>
+                    <Divider />
+                  </React.Fragment>
+                ))}
+              </List>
+            ) : (
+              <Typography>この日には予定がありません。</Typography>
+            )}
+          </Box>
         </Box>
       </Box>
       <AddEventModal

@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
-import { Event } from '../hooks/useEvents';
+import type { Event } from '../hooks/useEvents';
 import useAbsences from '../hooks/useAbsences';
 import { useAuth } from '../context/AuthContext';
 

@@ -6,23 +6,19 @@ import {
   DialogActions,
   TextField,
   Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Alert,
 } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { Timestamp } from 'firebase/firestore';
-import useEvents from '../hooks/useEvents'; // useEvents フックをインポート
-import ja from 'date-fns/locale/ja'; // 日本語ロケールをインポート
+import useEvents from '../hooks/useEvents';
+import { ja } from 'date-fns/locale';
 
 interface AddEventModalProps {
   open: boolean;
   onClose: () => void;
-  selectedDate?: Date; // カレンダーで選択された日付を受け取る
+  selectedDate?: Date;
 }
 
 const AddEventModal: React.FC<AddEventModalProps> = ({ open, onClose, selectedDate }) => {
@@ -37,17 +33,13 @@ const AddEventModal: React.FC<AddEventModalProps> = ({ open, onClose, selectedDa
 
   useEffect(() => {
     if (selectedDate) {
-      // 選択された日付の午前9時から午後10時をデフォルト値に設定
       const defaultStart = new Date(selectedDate);
-      defaultStart.setHours(9, 0, 0, 0); // 9:00 AM
-
+      defaultStart.setHours(9, 0, 0, 0);
       const defaultEnd = new Date(selectedDate);
-      defaultEnd.setHours(22, 0, 0, 0); // 10:00 PM
-
+      defaultEnd.setHours(22, 0, 0, 0);
       setStart(defaultStart);
       setEnd(defaultEnd);
     } else {
-      // 初期化
       setStart(null);
       setEnd(null);
     }
@@ -120,13 +112,13 @@ const AddEventModal: React.FC<AddEventModalProps> = ({ open, onClose, selectedDa
             label="開始日時"
             value={start}
             onChange={(newValue) => setStart(newValue)}
-            renderInput={(params) => <TextField {...params} fullWidth margin="dense" variant="standard" sx={{ mb: 2 }} />}
+            sx={{ width: '100%', mb: 2, mt: 1 }}
           />
           <DateTimePicker
             label="終了日時"
             value={end}
             onChange={(newValue) => setEnd(newValue)}
-            renderInput={(params) => <TextField {...params} fullWidth margin="dense" variant="standard" sx={{ mb: 2 }} />}
+            sx={{ width: '100%', mb: 2 }}
           />
         </LocalizationProvider>
         <TextField
