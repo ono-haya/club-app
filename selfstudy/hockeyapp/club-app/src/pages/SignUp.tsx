@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase'; // src/firebase.ts から auth オブジェクトをインポート
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { auth } from '../firebase';
+import { doc, setDoc, Timestamp } from 'firebase/firestore';
+import { db } from '../firebase';
 import {
   Container,
   TextField,
@@ -15,6 +17,7 @@ import {
 const SignUp: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -22,8 +25,21 @@ const SignUp: React.FC = () => {
     e.preventDefault();
     setError(null);
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      navigate('/'); // 登録成功後、トップページへリダイレクト
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      if (userCredential.user) {
+        await updateProfile(userCredential.user, {
+          displayName: displayName,
+        });
+
+        // Firestoreにユーザー情報を保存
+        await setDoc(doc(db, 'users', userCredential.user.uid), {
+          uid: userCredential.user.uid,
+          displayName: displayName,
+          email: email,
+          createdAt: Timestamp.now(),
+        });
+      }
+      navigate('/');
     } catch (err: any) {
       setError(err.message);
     }
@@ -40,11 +56,22 @@ const SignUp: React.FC = () => {
             margin="normal"
             required
             fullWidth
+            id="displayName"
+            label="表示名"
+            name="displayName"
+            autoComplete="name"
+            autoFocus
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
             id="email"
             label="メールアドレス"
             name="email"
             autoComplete="email"
-            autoFocus
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
