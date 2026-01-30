@@ -16,7 +16,7 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { Timestamp } from 'firebase/firestore';
-import { useEvents } from '../hooks/useEvents'; // useEvents フックをインポート
+import useEvents from '../hooks/useEvents'; // useEvents フックをインポート
 import ja from 'date-fns/locale/ja'; // 日本語ロケールをインポート
 
 interface AddEventModalProps {
