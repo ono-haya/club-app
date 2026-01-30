@@ -35,8 +35,8 @@ const useAbsences = () => {
       setAbsences(absencesData);
       setLoading(false);
     }, (err) => {
-      console.error("Failed to fetch absences:", err);
-      setError("Failed to fetch absences.");
+      console.error("Firebase error fetching absences:", err);
+      setError(`Failed to fetch absences: ${err.message}`);
       setLoading(false);
     });
 

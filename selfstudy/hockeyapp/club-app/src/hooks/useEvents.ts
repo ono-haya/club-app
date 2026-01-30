@@ -38,8 +38,8 @@ const useEvents = () => {
       setEvents(eventsData);
       setLoading(false);
     }, (err) => {
-      console.error("Failed to fetch events:", err);
-      setError("Failed to fetch events.");
+      console.error("Firebase error fetching events:", err);
+      setError(`Failed to fetch events: ${err.message}`);
       setLoading(false);
     });
 
