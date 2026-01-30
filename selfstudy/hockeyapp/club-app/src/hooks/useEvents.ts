@@ -5,11 +5,14 @@ import { useAuth } from '../context/AuthContext';
 
 export interface Event {
   id: string;
-  title: string;
-  description: string;
+  locationType: '学内練習' | '境町練習' | 'その他';
+  locationDetail?: string; // locationType が 'その他' の場合に使用
+  timeType: '午前' | '放課後' | '1日' | 'その他';
+  timeDetail?: string; // timeType が 'その他' の場合に使用
+  notes?: string; // 備考 (旧 description)
+
   start: Timestamp;
   end: Timestamp;
-  location: string;
   createdBy: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;

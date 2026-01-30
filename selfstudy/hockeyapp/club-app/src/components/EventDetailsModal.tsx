@@ -61,20 +61,30 @@ const EventDetailsModal: React.FC<EventDetailsModalProps> = ({ open, onClose, ev
 
   if (!event) return null;
 
+  // タイトルを生成
+  const eventTitle = `${event.locationType === 'その他' ? event.locationDetail : event.locationType} - ${event.timeType === 'その他' ? event.timeDetail : event.timeType}`;
+
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>{event.title}</DialogTitle>
+      <DialogTitle>{eventTitle}</DialogTitle>
       <DialogContent>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
         <Typography variant="body1" sx={{ mb: 1 }}>
           <strong>日時:</strong> {format(event.start.toDate(), 'yyyy年M月d日 (EE) HH:mm', { locale: ja })} 〜 {format(event.end.toDate(), 'HH:mm', { locale: ja })}
         </Typography>
         <Typography variant="body1" sx={{ mb: 1 }}>
-          <strong>場所:</strong> {event.location}
+          <strong>場所:</strong> {event.locationType === 'その他' ? event.locationDetail : event.locationType}
+          {event.locationType === 'その他' && event.locationDetail && ` (${event.locationDetail})`}
         </Typography>
-        <Typography variant="body2" sx={{ mb: 2 }}>
-          {event.description}
+        <Typography variant="body1" sx={{ mb: 1 }}>
+          <strong>時間帯:</strong> {event.timeType === 'その他' ? event.timeDetail : event.timeType}
+          {event.timeType === 'その他' && event.timeDetail && ` (${event.timeDetail})`}
         </Typography>
+        {event.notes && (
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            <strong>備考:</strong> {event.notes}
+          </Typography>
+        )}
         <Box sx={{ mt: 2 }}>
           <Button
             variant="contained"

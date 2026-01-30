@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -35,6 +36,7 @@ const Home: React.FC = () => {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
   const { events, loading, error } = useEvents();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
@@ -42,6 +44,10 @@ const Home: React.FC = () => {
     } catch (error) {
       console.error("Logout error:", error);
     }
+  };
+
+  const handleGoToRanking = () => {
+    navigate('/ranking');
   };
 
   const handleCalendarDayClick = (date: Date) => {
@@ -88,7 +94,7 @@ const Home: React.FC = () => {
                 handleEventClick(event);
               }}
             >
-              {event.title}
+              {event.locationType === 'その他' ? event.locationDetail : event.locationType} - {event.timeType === 'その他' ? event.timeDetail : event.timeType}
             </Typography>
           ))}
         </Box>
@@ -104,22 +110,27 @@ const Home: React.FC = () => {
   ) : [];
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+    <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <AppBar position="static" sx={{ width: '100%' }}>
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Club App
           </Typography>
           {currentUser && (
-            <Button color="inherit" onClick={handleLogout}>
-              ログアウト
-            </Button>
+            <>
+              <Button color="inherit" onClick={handleGoToRanking}>
+                ランキング
+              </Button>
+              <Button color="inherit" onClick={handleLogout}>
+                ログアウト
+              </Button>
+            </>
           )}
         </Toolbar>
       </AppBar>
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ p: 3, maxWidth: 1200, width: '100%' }}>
         <Typography variant="h4" gutterBottom>
-          ようこそ、{currentUser?.email}さん！
+          ようこそ、{currentUser?.displayName || currentUser?.email}さん！
         </Typography>
         <Typography variant="body1" sx={{ mb: 2 }}>
           ここはメンバー専用のページです。
@@ -135,7 +146,7 @@ const Home: React.FC = () => {
             tileContent={tileContent}
             locale="ja-JP"
           />
-          <Box sx={{ mt: 3, width: '100%', maxWidth: 800 }}>
+          <Box sx={{ mt: 3, width: '100%' }}>
             <Typography variant="h6" sx={{ mb: 2 }}>
               {activeDate ? format(activeDate, 'yyyy年M月d日 (EE)', { locale: ja }) : ''} の予定
             </Typography>
@@ -145,8 +156,15 @@ const Home: React.FC = () => {
                   <React.Fragment key={event.id}>
                     <ListItemButton onClick={() => handleEventClick(event)}>
                       <ListItemText
-                        primary={event.title}
-                        secondary={`${format(event.start.toDate(), 'HH:mm', { locale: ja })} - ${format(event.end.toDate(), 'HH:mm', { locale: ja })} @ ${event.location} - ${event.description}`}
+                        primary={`${event.locationType === 'その他' ? event.locationDetail : event.locationType} - ${event.timeType === 'その他' ? event.timeDetail : event.timeType}`}
+                        secondary={
+                          <React.Fragment>
+                            <Typography component="span" variant="body2" color="text.primary">
+                              {`${format(event.start.toDate(), 'HH:mm', { locale: ja })} - ${format(event.end.toDate(), 'HH:mm', { locale: ja })}`}
+                            </Typography>
+                            {event.notes && <Typography component="span" variant="body2" color="text.secondary" sx={{ display: 'block' }}>備考: {event.notes}</Typography>}
+                          </React.Fragment>
+                        }
                       />
                     </ListItemButton>
                     <Divider />
