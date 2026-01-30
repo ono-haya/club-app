@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { collection, query, orderBy, onSnapshot, Timestamp } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
-import { Absence } from './useAbsences'; // 既存のAbsenceインターフェースを再利用
+import type { Absence } from './useAbsences'; // 既存のAbsenceインターフェースを再利用
 
 const useAllAbsences = () => {
   const [allAbsences, setAllAbsences] = useState<Absence[]>([]);

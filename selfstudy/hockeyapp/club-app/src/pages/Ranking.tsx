@@ -10,12 +10,14 @@ import {
   ListItem,
   ListItemText,
   LinearProgress,
+  Button,
+  Divider,
 } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
 import useUsers, { type UserProfile } from '../hooks/useUsers';
-import useEvents, { type Event } from '../hooks/useEvents';
+import useEvents from '../hooks/useEvents';
 import useAllAbsences from '../hooks/useAllAbsences';
 
 interface UserRanking extends UserProfile {
